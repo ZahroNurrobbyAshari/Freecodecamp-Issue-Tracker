@@ -1,8 +1,8 @@
 "use strict";
 
 const mongoose = require("mongoose");
-const IssueModel = require("../models");
-const ProjectModel = require("../models");
+const IssueModel = require("../models").Issue;
+const ProjectModel = require("../models").Project;
 
 module.exports = function (app) {
   app
@@ -23,7 +23,7 @@ module.exports = function (app) {
         return;
       }
 
-      const newIssue = new IssueModel.Issue({
+      const newIssue = new IssueModel({
         assigned_to: assigned_to || "",
         status_text: status_text || "",
         open: true,
@@ -34,7 +34,6 @@ module.exports = function (app) {
         updated_on: new Date(),
       });
 
-      console.log(ProjectModel);
 
       ProjectModel.findOne(
         {
@@ -42,17 +41,18 @@ module.exports = function (app) {
         },
         (err, projectdata) => {
           if (!projectdata) {
-            const newProject = new ProjectModel({ project });
-            console.log(newProject);
+            let newProject = new ProjectModel({ name: project});
+            newProject.issues.push(newIssue)
             newProject.save((err, data) => {
-              err || data
-                ? res.send("There was an error saving in post")
+              err || !data
+                ? res.send(err)
                 : res.json(newIssue);
             });
+
           } else {
             projectdata.issues.push(newIssue);
             projectdata.save((err, data) => [
-              err || data
+              err || !data
                 ? res.send("There was an error saving in post")
                 : res.json(newIssue),
             ]);

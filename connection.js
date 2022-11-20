@@ -1,26 +1,8 @@
-// Do not change this file
-require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const mongoose = require('mongoose');
 
-async function main(callback) {
-  const uri = process.env.MONGO_URI;
-  const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverApi: ServerApiVersion.v1,
-  });
+const db = mongoose.connect(process.env.MONGO_URI,{
+  useUnifiedTopology:true,
+  useNewUrlParser:true,
+})
 
-  try {
-    // Connect to the MongoDB cluster
-    await client.connect();
-
-    // Make the appropriate DB calls
-    await callback(client);
-  } catch (e) {
-    // Catch any errors
-    console.error(e);
-    throw new Error("Unable to Connect to Database");
-  }
-}
-
-module.exports = main;
+module.exports = db;

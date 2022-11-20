@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
+
+
+
 // Declare the Schema of the Mongo model
 var IssueSchema = new Schema({
-  assigned_to: String,
-  status_text: String,
+  assigned_to: {type : String},
+  status_text: {type : String},
   open: Boolean,
   issue_title: {
     type: String,
@@ -31,9 +34,9 @@ var ProjectSchema = new Schema({
     type: String,
     required: true,
   },
-  issues: {
-    IssueSchema,
-  },
+  issues: 
+    [IssueSchema],
+  
 });
 const Project = mongoose.model("Project", ProjectSchema);
 
