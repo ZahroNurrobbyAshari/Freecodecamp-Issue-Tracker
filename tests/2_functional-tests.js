@@ -45,8 +45,8 @@ suite("Functional Tests", function () {
           assert.equal(res.body.created_by, "created_by 1");
           assert.equal(res.body.assigned_to, "assigned to 1");
           assert.equal(res.body.status_text, "status 1");
+          done();
         });
-      done();
     });
 
     test("Create an issue with only required fields: POST request to /api/issues/{project}", (done) => {
@@ -72,8 +72,8 @@ suite("Functional Tests", function () {
           assert.equal(res.body.created_by, "created_by 2");
           assert.equal(res.body.assigned_to, "");
           assert.equal(res.body.status_text, "");
+          done();
         });
-      done();
     });
 
     test("Create an issue with missing required fields: POST request to /api/issues/{project}", (done) => {
@@ -89,12 +89,12 @@ suite("Functional Tests", function () {
         .end((err, res) => {
           assert.equal(res.status, 200);
           assert.equal(res.body.error, "required field(s) missing");
+          done();
         });
-      done();
     });
   });
 
-  suite("GET /api/issues/projects", () => {
+  suite("GET /api/issues/{projects}", () => {
     test("View issues on a project: GET request to /api/issues/{project}", (done) => {
       chai
         .request(server)
@@ -146,6 +146,120 @@ suite("Functional Tests", function () {
             status_text: "",
             assigned_to: "",
           });
+          done();
+        });
+    });
+  });
+
+  suite("PUT /api/issues/{projects}", () => {
+    test("Update one field on an issue: PUT request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .put("/api/issues/test")
+        .send({ _id: "637af775956701450b8adbe3", issue_title: "test update" })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.result, "successfully updated");
+          assert.equal(res.body._id, "637af775956701450b8adbe3");
+          done();
+        });
+    });
+
+    test("Update multiple fields on an issue: PUT request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .put("/api/issues/test")
+        .send({
+          _id: "637af775956701450b8adbe3",
+          issue_title: "test update",
+          issue_text: "test update",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.result, "successfully updated");
+          assert.equal(res.body._id, "637af775956701450b8adbe3");
+          done();
+        });
+    });
+
+    test("Update an issue with missing _id: PUT request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .put("/api/issues/test")
+        .send({ issue_title: "test update", issue_text: "test update" })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.error, "missing _id");
+          done();
+        });
+    });
+
+    test("Update an issue with no fields to update: PUT request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .put("/api/issues/test")
+        .send({
+          _id: "637af775956701450b8adbe3",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.error, "no update field(s) sent");
+          done();
+        });
+    });
+
+    test("Update an issue with an invalid _id: PUT request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .put("/api/issues/test")
+        .send({
+          _id: "637af775956701450b8adbe3sdds",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.error, "no update field(s) sent");
+          done();
+        });
+    });
+  });
+
+  suite("Delete /api/issues/{projects}", () => {
+    test("Delete an issue: DELETE request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .del("/api/issues/apitest")
+        .send({
+          _id: "637a084be858d09b020c8147",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.result, "successfully deleted");
+          done();
+        });
+    });
+
+    test("Delete an issue with an invalid _id: DELETE request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .del("/api/issues/apitest")
+        .send({
+          _id: "637a084be858d09b020c8147dsadasdasdasads",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.error, "could not delete");
+          done();
+        });
+    });
+
+    test("Delete an issue with missing _id: DELETE request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .del("/api/issues/apitest")
+        .send({})
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.error, "missing _id");
           done();
         });
     });
