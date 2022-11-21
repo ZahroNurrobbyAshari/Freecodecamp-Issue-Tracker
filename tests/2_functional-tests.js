@@ -229,7 +229,7 @@ suite("Functional Tests", function () {
         .request(server)
         .del("/api/issues/apitest")
         .send({
-          _id: "637a084be858d09b020c8147",
+          _id: "637a19fcc998d84801fc2a74",
         })
         .end((err, res) => {
           assert.equal(res.status, 200);
