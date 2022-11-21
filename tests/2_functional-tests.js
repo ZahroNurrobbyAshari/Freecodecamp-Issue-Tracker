@@ -5,9 +5,24 @@ const server = require("../server");
 
 chai.use(chaiHttp);
 
+// Create an issue with every field: POST request to /api/issues/{project}
+// Create an issue with only required fields: POST request to /api/issues/{project}
+// Create an issue with missing required fields: POST request to /api/issues/{project}
+// View issues on a project: GET request to /api/issues/{project}
+// View issues on a project with one filter: GET request to /api/issues/{project}
+// View issues on a project with multiple filters: GET request to /api/issues/{project}
+// Update one field on an issue: PUT request to /api/issues/{project}
+// Update multiple fields on an issue: PUT request to /api/issues/{project}
+// Update an issue with missing _id: PUT request to /api/issues/{project}
+// Update an issue with no fields to update: PUT request to /api/issues/{project}
+// Update an issue with an invalid _id: PUT request to /api/issues/{project}
+// Delete an issue: DELETE request to /api/issues/{project}
+// Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
+// Delete an issue with missing _id: DELETE request to /api/issues/{project}
+
 suite("Functional Tests", function () {
   suite("POST /api/issues/{project}", () => {
-    test("issue with every field", (done) => {
+    test("Create an issue with every field: POST request to /api/issues/{project}", (done) => {
       chai
         .request(server)
         .post("/api/issues/projects")
@@ -34,7 +49,7 @@ suite("Functional Tests", function () {
       done();
     });
 
-    test("issue with only required fields", (done) => {
+    test("Create an issue with only required fields: POST request to /api/issues/{project}", (done) => {
       chai
         .request(server)
         .post("/api/issues/projects")
@@ -61,7 +76,7 @@ suite("Functional Tests", function () {
       done();
     });
 
-    test("issue with missing required fields", (done) => {
+    test("Create an issue with missing required fields: POST request to /api/issues/{project}", (done) => {
       chai
         .request(server)
         .post("/api/issues/projects")
@@ -80,14 +95,59 @@ suite("Functional Tests", function () {
   });
 
   suite("GET /api/issues/projects", () => {
-    test("View issues on a project", (done) => {
+    test("View issues on a project: GET request to /api/issues/{project}", (done) => {
       chai
         .request(server)
-        .get("/api/issues/projects")
+        .get("/api/issues/test")
         .end((err, res) => {
           assert.equal(res.status, 200);
+          assert.equal(res.body.length, 2);
+          done();
         });
-      done();
+    });
+
+    test("View issues on a project with one filter: GET request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .get("/api/issues/test")
+        .query({ _id: "637af6ef2bcac7c102ce0497" })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.deepEqual(res.body[0], {
+            _id: "637af6ef2bcac7c102ce0497",
+            updated_on: "2022-11-21T03:56:31.639Z",
+            created_on: "2022-11-21T03:56:31.639Z",
+            created_by: "anjas",
+            issue_text: "oke",
+            issue_title: "test",
+            open: true,
+            status_text: "",
+            assigned_to: "",
+          });
+          done();
+        });
+    });
+
+    test("View issues on a project with multiple filters: GET request to /api/issues/{project}", (done) => {
+      chai
+        .request(server)
+        .get("/api/issues/test")
+        .query({ issue_title: "test", issue_tex: "oke" })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.deepEqual(res.body[0], {
+            _id: "637af6ef2bcac7c102ce0497",
+            updated_on: "2022-11-21T03:56:31.639Z",
+            created_on: "2022-11-21T03:56:31.639Z",
+            created_by: "anjas",
+            issue_text: "oke",
+            issue_title: "test",
+            open: true,
+            status_text: "",
+            assigned_to: "",
+          });
+          done();
+        });
     });
   });
 });
