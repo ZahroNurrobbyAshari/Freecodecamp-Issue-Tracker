@@ -36,7 +36,7 @@ suite("Functional Tests", function () {
         })
         .end((err, res) => {
           assert.equal(res.status, 200);
-          assert.isNotNull(res.body._id);
+          deleteId = res.body._id;
           assert.isNotNull(res.body.created_on);
           assert.isNotNull(res.body.updated_on);
           assert.equal(res.body.open, true);
@@ -227,9 +227,9 @@ suite("Functional Tests", function () {
     test("Delete an issue: DELETE request to /api/issues/{project}", (done) => {
       chai
         .request(server)
-        .del("/api/issues/apitest")
+        .del("/api/issues/projects")
         .send({
-          _id: "637a19fcc998d84801fc2a74",
+          _id: deleteId,
         })
         .end((err, res) => {
           assert.equal(res.status, 200);
